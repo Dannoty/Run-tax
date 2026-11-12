@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Withholding Tax Assistant · AC317</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f4f7fa;--fg:#12263f;--mut:#5b6b7d;--line:#cfd9e4;--card:#fff;--acc:#0b5c8a;--accfg:#fff;--ok:#0c7a4d;--okbg:#e3f4ec;--warn:#8a5a00;--warnbg:#fff3d6;--bad:#a42a2a;--badbg:#fde8e8;--ask:#4a3f9c;--askbg:#ecebfa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1824;--fg:#e4ecf5;--mut:#98a9bb;--line:#2a3b50;--card:#152333;--acc:#5db4e8;--accfg:#08233a;--ok:#5fd6a0;--okbg:#10382a;--warn:#f0c15c;--warnbg:#3a2e0e;--bad:#ff9a9a;--badbg:#401a1a;--ask:#b7aff5;--askbg:#27214d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1824;--fg:#e4ecf5;--mut:#98a9bb;--line:#2a3b50;--card:#152333;--acc:#5db4e8;--accfg:#08233a;--ok:#5fd6a0;--okbg:#10382a;--warn:#f0c15c;--warnbg:#3a2e0e;--bad:#ff9a9a;--badbg:#401a1a;--ask:#b7aff5;--askbg:#27214d;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 "Noto Sans Thai","Sarabun",Tahoma,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px 14px 48px}
+h1{font-size:1.35rem;margin:6px 0 2px;line-height:1.35}h2{font-size:1.05rem;margin:20px 0 8px}
+.sub{color:var(--mut);font-size:.88rem;margin:0 0 12px}
+nav{display:flex;gap:4px;border-bottom:2px solid var(--line);margin:12px 0;overflow-x:auto}
+nav button{flex:none;background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:9px 12px;font:inherit;font-weight:600;color:var(--mut);cursor:pointer}
+nav button[aria-selected=true]{color:var(--acc);border-color:var(--acc)}
+section[hidden]{display:none}
+label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 4px}
+select,input,textarea{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg)}
+:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+@media(max-width:480px){.g2{grid-template-columns:1fr}}
+.btn{background:var(--acc);color:var(--accfg);border:0;border-radius:6px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer;margin-top:16px}
+.btn.alt{background:none;color:var(--acc);border:1px solid var(--acc);padding:6px 10px;margin:0;font-size:.85rem}
+.res{margin-top:18px;border:1px solid var(--line);border-radius:8px;background:var(--card);overflow:hidden}
+.ban{padding:12px 14px;font-weight:700}
+.ban.ok{background:var(--okbg);color:var(--ok)}.ban.ex{background:var(--warnbg);color:var(--warn)}.ban.ask{background:var(--askbg);color:var(--ask)}.ban.rev{background:var(--badbg);color:var(--bad)}
+.res .in{padding:4px 14px 14px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--mut);font-weight:600;white-space:nowrap}
+td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.big td{font-weight:700}
+ul{margin:6px 0;padding-left:20px}a{color:var(--acc)}
+.tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:.78rem;font-weight:700}
+.tag.p{background:var(--okbg);color:var(--ok)}.tag.f{background:var(--badbg);color:var(--bad)}
+pre{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;font:inherit;font-size:.9rem}
+.note{font-size:.82rem;color:var(--mut);border-left:3px solid var(--line);padding-left:10px;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+<h1>AI Withholding Tax Assistant</h1>
+<p class="sub">AC317 การบัญชีภาษีอากร · ต้นแบบวิเคราะห์ภาษีเงินได้หัก ณ ที่จ่าย (ผู้จ่าย: บริษัทไทย · ผู้รับ: ผู้มีถิ่นที่อยู่ในไทย) · ใช้เพื่อการศึกษา ต้องให้นักบัญชีตรวจก่อนใช้จริง</p>
+<nav role="tablist">
+<button role="tab" aria-selected="true" data-t="a">วิเคราะห์</button>
+<button role="tab" aria-selected="false" data-t="c">ฐานความรู้</button>
+<button role="tab" aria-selected="false" data-t="d">Prompt</button>
+</nav>
+
+<section id="a">
+<label for="type">ลักษณะรายการ (ระบบวิเคราะห์จากเนื้องาน ไม่ใช่ชื่อบัญชี)</label>
+<select id="type"><option value="">— เลือก —</option>
+<option value="rent">เช่าทรัพย์สิน (อาคาร/สำนักงาน/ที่ดิน)</option>
+<option value="serv">บริการ / จ้างทำของทั่วไป</option>
+<option value="hire7">จ้างทำของ ผู้รับจ้างจัดหาวัสดุสำคัญเอง</option>
+<option value="ads">เผยแพร่โฆษณา</option>
+<option value="trans">ขนส่ง (ผู้รับประกอบกิจการขนส่ง)</option>
+<option value="goods">ซื้อสินค้า (มีค่าจัดส่งเรียกเก็บเพิ่ม)</option>
+<option value="hotel">ค่าห้องพักโรงแรม</option>
+<option value="rest">ค่าอาหาร (ภัตตาคาร)</option>
+<option value="unk">ไม่ทราบ / ไม่ระบุรายละเอียด</option></select>
+<div class="g2">
+<div><label for="payee">ผู้รับเงิน</label>
+<select id="payee"><option value="">— เลือก —</option><option value="corp">บริษัท/นิติบุคคลไทย</option><option value="person">บุคคลธรรมดา (ถิ่นที่อยู่ไทย)</option><option value="foreign">ต่างประเทศ/ไม่ใช่ผู้มีถิ่นที่อยู่ไทย</option><option value="unk">ไม่ทราบ</option></select></div>
+<div><label for="amt">จำนวนเงิน (บาท)</label><input id="amt" type="number" min="0" step="0.01" inputmode="decimal"></div>
+<div><label for="vat">VAT 7%</label>
+<select id="vat"><option value="unk">ไม่ทราบ</option><option value="none">ไม่มี VAT</option><option value="sep">มี VAT แยกจากจำนวนเงิน</option><option value="inc">จำนวนเงินรวม VAT แล้ว</option></select></div>
+<div><label for="date">วันที่จ่าย</label><input id="date" type="date" value="2026-11-09"></div>
+</div>
+<label for="desc">รายละเอียด/เงื่อนไขพิเศษ (ถ้ามี)</label>
+<textarea id="desc" rows="2" placeholder="เช่น จ่ายล่วงหน้า, ใช้มาตรการอัตราพิเศษ, ผู้รับเป็นมูลนิธิ"></textarea>
+<button class="btn" id="go">วิเคราะห์</button>
+<div id="out" aria-live="polite"></div>
+</section>
+
+<section id="c" hidden>
+<p class="sub">ทุกแถวมีแหล่งอ้างอิงที่เปิดตรวจสอบได้ · เข้าถึงข้อมูลเมื่อ 13 พ.ย. 2569 · ต้องยืนยันเลขข้อและฉบับแก้ไข ณ วันที่จ่ายกับเว็บกรมสรรพากรทุกครั้ง</p>
+<div class="tw"><table id="kb"></table></div>
+<p class="note">ผู้รับเงินต่างประเทศ ผู้รับที่ได้รับยกเว้นเฉพาะ (เช่น มูลนิธิ/สมาคม) การจ่ายล่วงหน้า และมาตรการอัตราพิเศษผ่าน e-Withholding Tax อยู่นอกขอบเขตต้นแบบนี้ ระบบจะส่งให้ผู้เชี่ยวชาญตรวจ</p>
+</section>
+
+<section id="d" hidden>
+<h2>Master Prompt ฉบับที่ 1 (ก่อนแก้ — คงไว้ตามเดิม)</h2>
+<pre id="mp">คุณคือ AI Withholding Tax Assistant ผู้ช่วยวิเคราะห์ภาษีเงินได้หัก ณ ที่จ่ายตามกฎหมายไทย สำหรับธุรกรรมทั่วไปของบริษัทไทยกับผู้รับเงินในไทย
+1) ตรวจสถานะผู้จ่าย/ผู้รับ ถิ่นที่อยู่ ลักษณะงาน จำนวนเงิน VAT วันที่จ่าย และเงื่อนไขพิเศษก่อนวิเคราะห์
+2) หากข้อมูลจำเป็นขาด ต้องถามกลับอย่างชัดเจน ห้ามคาดเดาอัตราภาษี
+3) วิเคราะห์เนื้อหาของธุรกรรม ไม่ยึดเพียงชื่อบัญชีหรือคำบนใบแจ้งหนี้
+4) ใช้หลักเกณฑ์ตามประมวลรัษฎากรและคำสั่งกรมสรรพากร ท.ป.4/2528 พร้อมฉบับแก้ไขที่ใช้บังคับ ณ วันที่จ่ายเงิน
+5) แสดง: ประเภทเงินได้ หน้าที่หัก อัตรา ฐาน สูตร ยอดหัก ยอดสุทธิ แบบนำส่ง และลิงก์แหล่งกฎหมายที่เปิดตรวจสอบได้
+6) หากตรวจแหล่งกฎหมายไม่ได้ ให้แจ้งข้อจำกัด ห้ามสร้างเลขมาตรา/ข้อ/ลิงก์เอง
+7) ผู้รับต่างประเทศ เงื่อนไขเฉพาะ หรือรายการคลุมเครือ ให้แจ้งว่าต้องตรวจเพิ่มและระบุคำถามที่จำเป็น
+8) ผลลัพธ์ใช้เพื่อการศึกษา ต้องให้นักบัญชีตรวจก่อนปฏิบัติจริง</pre>
+<button class="btn alt" id="cp">คัดลอกฉบับที่ 1</button>
+<h2>Master Prompt ฉบับสุดท้าย (หลังแก้)</h2>
+<p class="sub">เริ่มจากสำเนาฉบับที่ 1 แก้ได้เลยหลังทดสอบ ระบบบันทึกอัตโนมัติในเบราว์เซอร์นี้เท่านั้น จึงควรกดคัดลอกไปเก็บในรายงานด้วย</p>
+<textarea id="p2" rows="16" style="font-size:.9rem" aria-label="Master Prompt ฉบับสุดท้าย"></textarea>
+<button class="btn alt" id="cp2" style="margin-top:8px">คัดลอกฉบับสุดท้าย</button>
+<label for="lg">สิ่งที่แก้และเหตุผล (ข้อใดผิด แก้ส่วนไหน ผลดีขึ้นอย่างไร)</label>
+<textarea id="lg" rows="5" style="font-size:.9rem"></textarea>
+<button class="btn" id="cpall">คัดลอกทั้งหมด (ก่อนแก้ + หลังแก้ + เหตุผล)</button>
+<h2>Workflow การตัดสินใจ</h2>
+<ul>
+<li>รับข้อมูล → ครบหรือไม่? ไม่ครบ: <b>หยุดและถามกลับ</b></li>
+<li>ผู้รับต่างประเทศ / ข้อมูลคลุมเครือ: <b>ส่งผู้เชี่ยวชาญ</b></li>
+<li>จำแนกจากเนื้องาน: เช่า · บริการ/จ้างทำของ · โฆษณา · ขนส่ง · ไม่อยู่ในบังคับ (โรงแรม/ภัตตาคาร/ซื้อขายสินค้า)</li>
+<li>ฐานภาษี: ไม่รวม VAT เมื่อแยกแสดงชัดเจน</li>
+<li>คำนวณยอดหัก = ฐาน × อัตรา · ยอดสุทธิ = ยอดรวมที่เรียกเก็บ − ยอดหัก</li>
+<li>เลือกแบบ: ผู้รับนิติบุคคล ภ.ง.ด.53 · บุคคลธรรมดา ภ.ง.ด.3 · แสดงแหล่งกฎหมายและข้อควรระวัง</li>
+</ul>
+</section>
+<p class="note">เครื่องมือนี้ใช้กฎที่เขียนไว้ล่วงหน้า (rule-based) ตามฐานความรู้ ไม่ได้เดาอัตราเอง · ไม่ใช่คำปรึกษาทางภาษี</p>
+</main>
+<script>
+const $=s=>document.querySelector(s),U0='https://www.rd.go.th/3479.html';
+const T={
+rent:{n:'ค่าเช่าทรัพย์สิน',inc:'เงินได้ตามมาตรา 40(5)',r:5,c:'ท.ป.4/2528 ข้อ 6',u:'https://rd.go.th/25508.html',nt:'ตัวอย่างข้อหารือของ RD เรื่องค่าเช่าที่ดิน ใช้อัตราเดียวกัน'},
+serv:{n:'ค่าบริการ/ค่าจ้างทำของทั่วไป',inc:'เงินได้ตามมาตรา 40(8)',r:3,c:'ท.ป.4/2528 ข้อ 8 และ 12/1',u:'https://rd.go.th/28764.html',nt:'ข้อหารือ RD ยืนยัน 3% ตามข้อ 8'},
+hire7:{n:'จ้างทำของที่ผู้รับจ้างจัดหาวัสดุสำคัญ',inc:'เงินได้ตามมาตรา 40(7) (ประเมินจากเนื้องาน)',r:3,c:'ท.ป.4/2528 ข้อ 8',u:U0,nt:'ต้องยืนยันว่าเป็นรับเหมา/จ้างทำของ ไม่ใช่ซื้อขายสินค้า และตรวจข้อหารือ RD ก่อนใช้จริง',rv:1},
+ads:{n:'ค่าโฆษณา',inc:'เงินได้ตามมาตรา 40(8)',r:2,c:'ท.ป.4/2528 ข้อ 10',u:'https://rd.go.th/25182.html',nt:'การเผยแพร่โฆษณาผ่านสื่อ เป็นค่าโฆษณา ไม่ใช่ค่าบริการทั่วไป 3% (ข้อหารือ RD ใช้ข้อ 10 อัตรา 2%) แต่ถ้าเป็นเพียงเช่าเวลาออกอากาศโดยผู้เช่าผลิตรายการเอง RD ถือเป็นค่าบริการอื่น'},
+trans:{n:'ค่าขนส่ง',inc:'เงินได้ตามมาตรา 40(8)',r:1,c:'ท.ป.4/2528 ข้อ 12/4',u:'https://rd.go.th/36191.html',nt:'เฉพาะผู้ประกอบกิจการขนส่ง'},
+hotel:{n:'ค่าบริการโรงแรม (ค่าห้องพัก)',x:1,c:'ท.ป.4/2528 ข้อ 12/1 (ยกเว้นค่าบริการโรงแรม)',u:U0,nt:'ค่าบริการอื่นของโรงแรม (เช่น ทำความสะอาดแยกสัญญา ห้องประชุมแยกใบแจ้งหนี้) ต้องวิเคราะห์แยก'},
+rest:{n:'ค่าบริการภัตตาคาร',x:1,c:'ท.ป.4/2528 ข้อ 12/1 (ยกเว้นค่าบริการภัตตาคาร)',u:'https://rd.go.th/41765.html',nt:'ข้อหารือ RD: บริการปรุงอาหารเข้าลักษณะภัตตาคาร'}
+};
+const fm=n=>n.toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function analyze(i){
+ const q=[],a=Number(i.amt);
+ if(i.payee==='foreign')return{s:'rev',t:'ส่งให้ผู้เชี่ยวชาญตรวจ',q:['ผู้รับเป็นผู้ไม่มีถิ่นที่อยู่ในไทย: ต้องตรวจประเภทเงินได้ อนุสัญญาภาษีซ้อน และแบบ ภ.ง.ด.54 ซึ่งอยู่นอกขอบเขตต้นแบบนี้']};
+ if(!i.type||i.type==='unk')q.push('งานหรือสัญญานี้คืออะไร (เช่า บริการ จ้างทำของ โฆษณา ขนส่ง ซื้อสินค้า)? มีสัญญา/ใบแจ้งหนี้รายละเอียดหรือไม่?');
+ if(!i.payee||i.payee==='unk')q.push('ผู้รับเป็นบริษัท/นิติบุคคล หรือบุคคลธรรมดา และมีถิ่นที่อยู่ในไทยหรือไม่?');
+ if(!(a>0))q.push('จำนวนเงินเท่าไร?');
+ if(i.type!=='hotel'&&i.type!=='rest'&&i.vat==='unk')q.push('จำนวนเงินรวม VAT แล้วหรือไม่ และใบกำกับภาษีแสดง VAT แยกไว้หรือไม่?');
+ if(i.type==='goods'){q.push('ค่าจัดส่ง 2,000 บาทเรียกเก็บโดยผู้ขายสินค้าเอง หรือจ้างบริษัทขนส่งภายนอก? แยกเป็นรายการในใบกำกับภาษีหรือไม่? ผู้ขายประกอบกิจการขนส่งเป็นปกติหรือไม่?');}
+ if(q.length)return{s:'ask',t:'ข้อมูลไม่ครบ ต้องถามเพิ่มก่อนตอบ',q,r:i.type==='goods'?{n:'ซื้อสินค้า',inc:'ราคาสินค้าเป็นการซื้อขาย ไม่ใช่เงินได้ตามมาตรา 40 ที่ต้องหัก',c:'ท.ป.4/2528 (ไม่อยู่ในรายการที่ต้องหัก)',u:U0,nt:'ค่าจัดส่งที่ผู้ขายสินค้า (ไม่ใช่ผู้ประกอบกิจการขนส่ง) เรียกเก็บรวมในการขาย ไม่น่าเข้าข้อ 12/4 แต่ถ้าจ้างขนส่งภายนอก ผู้จ่ายค่าขนส่งนั้นอาจต้องหัก 1% — ให้ผู้เชี่ยวชาญยืนยันจากข้อเท็จจริง'}:null};
+ const r=T[i.type];
+ if(r.x)return{s:'ex',t:'ไม่ต้องหักภาษี ณ ที่จ่าย',r,base:0,wht:0,pay:a,q:[]};
+ const base=i.vat==='inc'?a*100/107:a,vat=i.vat==='sep'?a*.07:0,wht=Math.round(base*r.r)/100,gross=i.vat==='sep'?a+vat:a;
+ return{s:r.rv?'rev':'ok',t:r.rv?'ต้องหัก แต่ควรให้ผู้เชี่ยวชาญตรวจข้อเท็จจริง':'ต้องหักภาษี ณ ที่จ่าย',r,base,vat,wht,pay:gross-wht,form:i.payee==='corp'?'ภ.ง.ด.53':'ภ.ง.ด.3',q:[]};
+}
+function show(x,i){
+ const cls={ok:'ok',ex:'ex',ask:'ask',rev:'rev'}[x.s];let h=`<div class="res"><div class="ban ${cls}">${x.t}</div><div class="in">`;
+ if(x.r){const r=x.r;h+=`<table><tr><th>ประเภทรายการ</th><td>${r.n}${r.inc?' · '+r.inc:''}</td></tr>`;
+  if(x.s==='ok'||x.s==='rev'&&x.wht!==undefined&&!x.q.length)h+=`<tr><th>อัตรา</th><td>${r.r}%</td></tr><tr><th>ฐานคำนวณ</th><td class="n">${fm(x.base)}</td></tr><tr><th>สูตร</th><td>${fm(x.base)} × ${r.r}%</td></tr><tr class="big"><th>ภาษีหัก ณ ที่จ่าย</th><td class="n">${fm(x.wht)}</td></tr>${x.vat?`<tr><th>VAT 7%</th><td class="n">${fm(x.vat)}</td></tr>`:''}<tr class="big"><th>ยอดจ่ายสุทธิ</th><td class="n">${fm(x.pay)}</td></tr><tr><th>แบบนำส่ง</th><td>${x.form}</td></tr>`;
+  if(x.s==='ex')h+=`<tr><th>ยอดจ่าย</th><td class="n">${fm(x.pay)} (ไม่หัก)</td></tr>`;
+  h+=`<tr><th>อ้างอิง</th><td>${r.c} · <a href="${r.u}" target="_blank" rel="noopener">เปิดแหล่งที่มา</a></td></tr></table><p>${esc(r.nt)}</p>`;}
+ if(x.q.length)h+=`<b>${x.s==='rev'?'ประเด็นที่ต้องส่งผู้เชี่ยวชาญ':'คำถามที่ต้องตอบ'}</b><ul>${x.q.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>`;
+ if(i.date!=='2026-11-09')h+=`<p>ใช้กฎ ณ วันที่จ่าย ${i.date}: ตรวจว่ามีคำสั่ง/ประกาศแก้ไขที่มีผลในวันนั้นหรือไม่</p>`;
+ if(i.desc)h+=`<p>หมายเหตุที่ระบุ: “${esc(i.desc)}” — ต้องตรวจว่าเข้าเงื่อนไขพิเศษ (เช่น จ่ายล่วงหน้า มาตรการอัตราพิเศษ ผู้รับยกเว้น) หรือไม่ ซึ่งระบบไม่ประเมินเอง</p>`;
+ return h+'</div></div>';
+}
+const get=()=>({type:$('#type').value,payee:$('#payee').value,amt:$('#amt').value,vat:$('#vat').value,date:$('#date').value,desc:$('#desc').value.trim()});
+$('#go').onclick=()=>{const i=get();$('#out').innerHTML=show(analyze(i),i)};
+const K=[['ค่าเช่า','40(5)','5%','ข้อ 6',U0],['ค่าบริการ/จ้างทำของ','40(8)','3%','ข้อ 8, 12/1','https://rd.go.th/28764.html'],['ค่าโฆษณา','40(8)','2%','ข้อ 10','https://rd.go.th/25182.html'],['ค่าขนส่ง','40(8)','1%','ข้อ 12/4','https://rd.go.th/36191.html'],['ค่าบริการโรงแรม','40(8)','ไม่หัก','ข้อ 12/1 (ข้อยกเว้น)',U0],['ค่าบริการภัตตาคาร','40(8)','ไม่หัก','ข้อ 12/1 (ข้อยกเว้น)','https://rd.go.th/41765.html'],['ซื้อขายสินค้า','ไม่ใช่เงินได้ที่ต้องหัก','—','ต้องยืนยันตามข้อเท็จจริง',U0]];
+$('#kb').innerHTML='<tr><th>รายการ</th><th>ประเภทเงินได้</th><th>อัตรา</th><th>ข้อกำหนด (ท.ป.4/2528)</th><th>แหล่ง</th></tr>'+K.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><a href="${r[4]}" target="_blank" rel="noopener">เปิด</a></td></tr>`).join('')+'<tr><td colspan="5">แบบนำส่ง: ผู้รับนิติบุคคล ภ.ง.ด.53 · ผู้รับบุคคลธรรมดา ภ.ง.ด.3 (ยืนยันที่ rd.go.th)</td></tr>';
+function go(t){document.querySelectorAll('section[id]').forEach(s=>s.hidden=s.id!==t);document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t))}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+const cpy=async(b,t)=>{const o=b.dataset.o||b.textContent;b.dataset.o=o;try{await navigator.clipboard.writeText(t);b.textContent='คัดลอกแล้ว'}catch(e){b.textContent='คัดลอกไม่ได้ ให้เลือกข้อความเอง'}setTimeout(()=>b.textContent=o,2000)};
+$('#cp').onclick=e=>cpy(e.target,$('#mp').textContent);
+$('#cp2').onclick=e=>cpy(e.target,$('#p2').value);
+$('#cpall').onclick=e=>cpy(e.target,'Master Prompt ฉบับที่ 1 (ก่อนแก้)\n'+$('#mp').textContent+'\n\nMaster Prompt ฉบับสุดท้าย (หลังแก้)\n'+$('#p2').value+'\n\nสิ่งที่แก้และเหตุผล\n'+$('#lg').value);
+try{const a=localStorage.getItem('wta-p2'),b=localStorage.getItem('wta-lg');$('#p2').value=a!==null?a:$('#mp').textContent;$('#lg').value=b||''}catch(e){$('#p2').value=$('#mp').textContent}
+$('#p2').oninput=()=>{try{localStorage.setItem('wta-p2',$('#p2').value)}catch(e){}};
+$('#lg').oninput=()=>{try{localStorage.setItem('wta-lg',$('#lg').value)}catch(e){}};
+</script>
+</body>
+</html>
